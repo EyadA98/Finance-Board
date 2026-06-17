@@ -541,7 +541,9 @@ html.dark .note,html.dark .empty,html.dark .chart-sub,html.dark .card .sub,html.
 html.dark .prog{background:rgba(255,255,255,.10)}
 html.dark .ring .track{stroke:rgba(255,255,255,.10)}
 html.dark ::-webkit-scrollbar-thumb{background:rgba(138,100,200,.45)}
-html.dark .card .big{background:var(--grad-iri-rev)}
+html.dark .card .big{background:var(--grad-iri-rev);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+html.dark .top-logo{color:#ece7fb;opacity:1}
+html.dark .tb-mark svg{color:#fff}
 html.dark .insight.tone-good .ico{background:rgba(79,179,164,.20);color:#7fd1c4}
 html.dark .insight.tone-warn .ico{background:rgba(243,185,142,.20);color:#f3b98e}
 html.dark .insight.tone-info .ico{background:rgba(138,100,200,.22);color:#bba4e4}
@@ -556,6 +558,15 @@ html.dark .auth-tabs{background:rgba(255,255,255,.06)}
 html.dark .auth-tabs button{color:var(--muted)}
 html.dark .auth-tabs button.active{background:rgba(255,255,255,.12);color:#ece7fb;box-shadow:none}
 html.dark .auth-card input{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.16);color:var(--text)}
+/* mobile toast: centered pill that slides DOWN from the top, clear of the bottom nav */
+@media(max-width:768px){
+  .toast{left:50%;right:auto;bottom:auto;top:calc(env(safe-area-inset-top) + 64px);
+    transform:translate(-50%,-16px);max-width:90vw;width:max-content;text-align:center;
+    border-left:none;border-top:3px solid var(--peach);border-radius:16px;
+    box-shadow:0 14px 36px rgba(0,0,0,.5)}
+  .toast.show{transform:translate(-50%,0)}
+  .toast button{display:block;margin:8px auto 0}
+}
 </style>
 </head>
 <body>
