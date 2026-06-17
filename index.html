@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Finance Board — Wealth OS</title>
+<script>try{var _t=localStorage.getItem('financeBoard.theme')||'dark';document.documentElement.classList.toggle('dark',_t!=='light');}catch(e){document.documentElement.classList.add('dark');}</script>
 <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cdefs%3E%3ClinearGradient id="g" x1="0" y1="0" x2="1" y2="1"%3E%3Cstop offset="0%25" stop-color="%238E7FD0"/%3E%3Cstop offset="100%25" stop-color="%2326225C"/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width="100" height="100" rx="22" fill="url(%23g)"/%3E%3Cg transform="translate(20,21.6) scale(0.3053) translate(-381.64,-176.88)" fill="%23ffffff"%3E%3Cpath d="M381.64 217.79l10.23-40.91h171.15l-10.23 40.91z"/%3E%3Cpath d="M381.64 322.21l10.23 40.91h171.15l-10.23-40.91z"/%3E%3Cpath d="M381.64 290.46l10.23-40.91h186.5l-10.23 40.91z"/%3E%3C/g%3E%3C/svg%3E'>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -485,6 +486,76 @@ td.num input,td.num select{padding-right:8px}
 aside button.active{background:rgba(138,100,200,.34);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 6px 18px rgba(138,100,200,.28)}
 .card,.alloc-card{border-radius:20px}
 .hero,.modal,.auth-card{border-radius:24px}
+
+/* ====================================================================
+   DARK THEME — matched to Travel Planner (Riyadh Air · aviation luxury)
+   Toggle adds/removes `dark` on <html>; dark is the default.
+   ==================================================================== */
+html.dark{color-scheme:dark}
+html:not(.dark){color-scheme:light}
+html.dark{
+  --bg:#0d0926; --card:#15103a; --text:#ece7fb; --muted:#a99ccb;
+  --border:rgba(255,255,255,.10);
+  --lilac-soft:rgba(138,100,200,.16);
+  --green:#7fd1c4; --green-soft:rgba(79,179,164,.20); --red:#ff9b92; --red-soft:rgba(214,85,76,.22);
+  --grad-iri:linear-gradient(110deg,#bba4e4 0%,#8a64c8 35%,#b98fd9 55%,#f3b98e 100%);
+  --grad-iri-rev:linear-gradient(110deg,#c6b3ef 0%,#caa7ec 42%,#f3b98e 100%);
+  --glow-lav:0 0 40px -10px rgba(138,100,200,.55);
+  --glow-peach:0 0 40px -10px rgba(243,185,142,.5);
+  --sh-1:0 2px 10px rgba(0,0,0,.4);
+  --sh-2:0 22px 54px -20px rgba(138,100,200,.6),0 10px 26px rgba(0,0,0,.5);
+}
+html.dark input,html.dark select,html.dark textarea{color-scheme:dark}
+html.dark body::before{background:
+  radial-gradient(1200px 600px at 12% -10%,rgba(138,100,200,.22),transparent 55%),
+  radial-gradient(1000px 700px at 112% 8%,rgba(243,185,142,.13),transparent 50%),
+  linear-gradient(180deg,#0c0820 0%,#120c30 50%,#0c0820 100%);
+  animation:none}
+html.dark .card,html.dark .alloc-card,html.dark .insight{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 40px rgba(0,0,0,.42)}
+html.dark .card:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 22px 54px -18px rgba(138,100,200,.5)}
+html.dark .topbar{background:rgba(13,9,38,.6);border-bottom:1px solid rgba(255,255,255,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 8px 26px rgba(0,0,0,.45)}
+html.dark .seg{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10)}
+html.dark .seg button{color:var(--muted)}
+html.dark .chip,html.dark .mile{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text)}
+html.dark .chip button{color:#caa7ec}
+html.dark .btn.soft{background:rgba(255,255,255,.08);color:#d9caf3;border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+html.dark .btn.soft:hover{background:rgba(255,255,255,.15);filter:none}
+html.dark th{color:var(--muted);border-bottom:2px solid rgba(255,255,255,.12)}
+html.dark td{border-bottom:1px solid rgba(255,255,255,.07)}
+html.dark tbody tr:hover{background:rgba(138,100,200,.12)}
+html.dark tfoot td{background:rgba(255,255,255,.04);border-top:2px solid rgba(255,255,255,.14);color:#e7defb}
+html.dark td input,html.dark td select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:var(--text)}
+html.dark td input:hover,html.dark td select:hover{background:rgba(255,255,255,.10)}
+html.dark td input:focus,html.dark td select:focus{background:rgba(255,255,255,.12);border-color:var(--lavender);box-shadow:0 0 0 3px rgba(138,100,200,.25)}
+html.dark select.bare{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:var(--text)}
+html.dark select option{background:#1b1442;color:#ece7fb}
+html.dark td input[type=checkbox]{accent-color:#8a64c8}
+html.dark .pill{background:rgba(138,100,200,.22);color:#d4c6ef}
+html.dark .pill.live{background:rgba(79,179,164,.20);color:#7fd1c4}
+html.dark .trend.up{background:rgba(79,179,164,.20);color:#7fd1c4}
+html.dark .trend.down{background:rgba(214,85,76,.22);color:#ff9b92}
+html.dark .pos{color:#7fd1c4}html.dark .neg{color:#ff9b92}
+html.dark .note,html.dark .empty,html.dark .chart-sub,html.dark .card .sub,html.dark .crumb{color:var(--muted)}
+html.dark .prog{background:rgba(255,255,255,.10)}
+html.dark .ring .track{stroke:rgba(255,255,255,.10)}
+html.dark ::-webkit-scrollbar-thumb{background:rgba(138,100,200,.45)}
+html.dark .card .big{background:var(--grad-iri-rev)}
+html.dark .insight.tone-good .ico{background:rgba(79,179,164,.20);color:#7fd1c4}
+html.dark .insight.tone-warn .ico{background:rgba(243,185,142,.20);color:#f3b98e}
+html.dark .insight.tone-info .ico{background:rgba(138,100,200,.22);color:#bba4e4}
+html.dark .modal{background:rgba(24,18,60,.94);border:1px solid rgba(187,164,228,.24);color:var(--text);
+  box-shadow:0 30px 80px rgba(0,0,0,.65)}
+html.dark .modal p{color:var(--muted)}
+html.dark .modal input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:var(--text)}
+html.dark .auth-card{background:rgba(24,18,60,.92);border:1px solid rgba(187,164,228,.22);
+  box-shadow:0 30px 90px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
+html.dark .auth-card .tag{color:var(--muted)}
+html.dark .auth-tabs{background:rgba(255,255,255,.06)}
+html.dark .auth-tabs button{color:var(--muted)}
+html.dark .auth-tabs button.active{background:rgba(255,255,255,.12);color:#ece7fb;box-shadow:none}
+html.dark .auth-card input{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.16);color:var(--text)}
 </style>
 </head>
 <body>
@@ -516,6 +587,7 @@ aside button.active{background:rgba(138,100,200,.34);box-shadow:inset 0 1px 0 rg
   </div>
   <div class="top-actions">
     <span class="note" id="syncStatus" style="margin:0"></span>
+    <button class="btn soft tb-more" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle light or dark theme" title="Toggle theme"><span id="themeIcon"></span></button>
     <button class="btn soft" id="acctBtn" onclick="openAccount()">Account</button>
     <button class="btn soft tb-more" onclick="openTopMenu()" aria-label="More actions" title="More actions">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
@@ -1014,8 +1086,12 @@ document.getElementById("bottomBar").addEventListener("click", e=>{
 /* ---------- Charts (cached: rebuild only when data changes) ---------- */
 let charts = {};
 const PALETTE = ["#8a64c8","#a081d6","#623f94","#bba4e4","#f3b98e","#dd824b","#ec9d6a","#f8d2b4"];
-Chart.defaults.color = "#6a5f86";
-Chart.defaults.borderColor = "rgba(67,49,99,.10)";
+function setChartTheme(isDark){
+  Chart.defaults.color = isDark ? "#a99ccb" : "#6a5f86";
+  Chart.defaults.borderColor = isDark ? "rgba(255,255,255,.10)" : "rgba(67,49,99,.10)";
+  window.DONUT_SEP = isDark ? "#15103a" : "#ffffff";
+}
+setChartTheme(document.documentElement.classList.contains("dark"));
 Chart.defaults.plugins.tooltip.backgroundColor = "rgba(26,23,63,.88)";
 Chart.defaults.plugins.tooltip.padding = 12;
 Chart.defaults.plugins.tooltip.cornerRadius = 12;
@@ -1076,19 +1152,19 @@ function renderCharts(){
 
   const alloc = allocation();
   mkChart("assetsChart",{type:"doughnut",
-    data:{labels:alloc.map(a=>a[0]),datasets:[{data:alloc.map(a=>a[1]),backgroundColor:PALETTE,borderColor:"#fff",borderWidth:2.5,hoverOffset:9}]},
+    data:{labels:alloc.map(a=>a[0]),datasets:[{data:alloc.map(a=>a[1]),backgroundColor:PALETTE,borderColor:(window.DONUT_SEP||"#15103a"),borderWidth:2.5,hoverOffset:9}]},
     options:{cutout:"63%",plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>` ${c.label}: ${sar(c.parsed)} (${fmt(c.parsed/t.net*100)}%)`}}}}});
 
   const banks = data.accounts.filter(a=>["Bank Account","Savings","Wallet"].includes(a.type) && +a.balance>0);
   const bankTotal = banks.reduce((s,a)=>s+ +a.balance,0)||1;
   mkChart("banksChart",{type:"doughnut",
-    data:{labels:banks.map(b=>b.name),datasets:[{data:banks.map(b=>+b.balance),backgroundColor:PALETTE,borderColor:"#fff",borderWidth:2.5,hoverOffset:9}]},
+    data:{labels:banks.map(b=>b.name),datasets:[{data:banks.map(b=>+b.balance),backgroundColor:PALETTE,borderColor:(window.DONUT_SEP||"#15103a"),borderWidth:2.5,hoverOffset:9}]},
     options:{cutout:"63%",plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>` ${c.label}: ${sar(c.parsed)} (${fmt(c.parsed/bankTotal*100)}%)`}}}}});
 
   mkChart("portfolioChart",{type:"bar",
     data:{labels:hs.map(h=>h.name),datasets:[
       {label:"Market Value",data:hs.map(h=>h.value),backgroundColor:"#8a64c8",borderRadius:8},
-      {label:"Invested",data:hs.map(h=>h.invested),backgroundColor:"#623f94",borderRadius:8}]},
+      {label:"Invested",data:hs.map(h=>h.invested),backgroundColor:"#f3b98e",borderRadius:8}]},
     options:{plugins:{legend:{position:"bottom"}},scales:{y:{ticks:{callback:v=>fmt(v/1000)+"k"}}}}});
 
   const z = [...data.zaka].sort((a,b)=>a.year.localeCompare(b.year));
@@ -1880,6 +1956,24 @@ animateNumbers();                 // count-up entrance on first load
 initAuth();                       // restore session -> load cloud data -> THEN fetch live prices
 
 /* ---------- Top bar: quick actions sheet + native hide-on-scroll ---------- */
+/* ---------- Light / Dark theme ---------- */
+const THEME_SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;display:block"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></svg>';
+const THEME_MOON='<svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;display:block"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+function updThemeIcon(){ const ic=document.getElementById("themeIcon"); if(ic) ic.innerHTML = document.documentElement.classList.contains("dark") ? THEME_SUN : THEME_MOON; }
+function applyTheme(theme){
+  const isDark = theme!=="light";
+  document.documentElement.classList.toggle("dark", isDark);
+  try{ localStorage.setItem("financeBoard.theme", isDark?"dark":"light"); }catch(e){}
+  updThemeIcon();
+  if(window.Chart){
+    setChartTheme(isDark);
+    Object.keys(charts).forEach(k=>{ if(charts[k]){ charts[k].destroy(); delete charts[k]; } });
+    renderCharts(); renderBudgetChart();
+  }
+}
+function toggleTheme(){ applyTheme(document.documentElement.classList.contains("dark") ? "light" : "dark"); }
+updThemeIcon();
+
 function openTopMenu(){
   showModal(`<h4>Quick actions</h4><div class="modal-list">
     <button class="btn soft" onclick="closeModal();exportData()">⬇ &nbsp;Export backup (JSON)</button>
