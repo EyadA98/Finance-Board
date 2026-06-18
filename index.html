@@ -613,6 +613,47 @@ html.dark .tbl-filter option{background:#1b1442;color:#ece7fb}
 .tbl-tools{gap:8px;flex-wrap:wrap}
 @media(max-width:640px){.tbl-filter{flex:1}}
 .pill.live{margin-inline-start:7px;vertical-align:1px}
+/* === Unified pickers & dropdowns — match Travel Planner === */
+input[type=date],input[type=time]{border-radius:12px;font-family:inherit}
+html:not(.dark) input[type=date],html:not(.dark) input[type=time]{background:#fff;border:1px solid #d4c6ef;color:#2a1d44}
+html.dark input[type=date],html.dark input[type=time]{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#ece7fb}
+input[type=date]:focus,input[type=time]:focus{outline:none;border-color:var(--lavender);box-shadow:0 0 0 3px rgba(138,100,200,.22)}
+input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.95}
+/* selects styled exactly like the date inputs, with a lavender chevron */
+select,.tbl-filter,td select,select.bare{-webkit-appearance:none;-moz-appearance:none;appearance:none;border-radius:12px;padding-right:30px;background-repeat:no-repeat;background-position:right 10px center;background-size:14px;font-family:inherit}
+html.dark select,html.dark .tbl-filter,html.dark td select,html.dark select.bare{background-color:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#ece7fb;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23bba4e4' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")}
+html:not(.dark) select,html:not(.dark) .tbl-filter,html:not(.dark) td select,html:not(.dark) select.bare{background-color:#fff;border:1px solid #d4c6ef;color:#2a1d44;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a64c8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")}
+select:focus,.tbl-filter:focus,td select:focus,select.bare:focus{outline:none;border-color:var(--lavender);box-shadow:0 0 0 3px rgba(138,100,200,.22)}
+html.dark select option,html.dark .tbl-filter option,html.dark td select option,html.dark select.bare option{background:#1b1442;color:#ece7fb}
+html:not(.dark) select option,html:not(.dark) .tbl-filter option,html:not(.dark) td select option,html:not(.dark) select.bare option{background:#fff;color:#2a1d44}
+/* === Custom date picker (Travel Planner style) === */
+.dp-btn{width:100%;border-radius:12px;padding:7px 10px;min-height:36px;font-family:inherit;font-size:.9rem;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+html.dark .dp-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#ece7fb}
+html:not(.dark) .dp-btn{background:#fff;border:1px solid #d4c6ef;color:#2a1d44}
+.dp-btn .dp-ph{opacity:.45}
+.dp-btn .dp-ic{opacity:.6;display:flex;color:var(--lavender)}
+.dp-btn:hover{border-color:var(--lavender)}
+.dp-btn:focus{outline:none;border-color:var(--lavender);box-shadow:0 0 0 3px rgba(138,100,200,.22)}
+.dp-pop{position:fixed;z-index:120;width:248px;border-radius:16px;padding:12px;animation:pop .2s var(--ease)}
+html.dark .dp-pop{background:#1b1442;border:1px solid rgba(187,164,228,.30);box-shadow:0 20px 50px rgba(0,0,0,.55)}
+html:not(.dark) .dp-pop{background:#fff;border:1px solid #d4c6ef;box-shadow:0 20px 50px rgba(80,40,120,.20)}
+.dp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dp-title{font-family:'Marcellus',serif;font-size:1rem;color:var(--text)}
+html.dark .dp-pop .dp-title{color:#ece7fb}
+.dp-nav{width:30px;height:30px;border-radius:9px;border:none;background:rgba(138,100,200,.16);color:var(--lavender);font-size:1.15rem;line-height:1;cursor:pointer;transition:background .2s}
+.dp-nav:hover{background:rgba(138,100,200,.32)}
+.dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.dp-wd{margin-bottom:2px}
+.dp-w{text-align:center;font-size:.64rem;font-weight:800;color:var(--muted);padding:2px 0}
+.dp-day{height:30px;border:none;background:none;border-radius:9px;font-family:inherit;font-size:.82rem;cursor:pointer;color:var(--text);transition:background .15s}
+html.dark .dp-pop .dp-day{color:#e9e3f7}
+.dp-day:hover{background:rgba(138,100,200,.2)}
+.dp-today{box-shadow:inset 0 0 0 1.5px rgba(138,100,200,.65)}
+.dp-sel{background:linear-gradient(110deg,#bba4e4,#8a64c8 45%,#f3b98e);color:#15103a;font-weight:800}
+.dp-foot{text-align:center;margin-top:9px}
+.dp-clear{font-size:.72rem;color:var(--muted);background:rgba(138,100,200,.14);border:none;border-radius:8px;padding:4px 12px;cursor:pointer;font-family:inherit;transition:color .2s}
+.dp-clear:hover{color:var(--peach)}
+table.cardize tbody td .dp-btn{max-width:62%}
 </style>
 </head>
 <body>
@@ -2116,6 +2157,49 @@ function enhanceTables(){
       Array.prototype.forEach.call(tr.cells,function(td,ci){if(heads[ci])td.setAttribute("data-label",heads[ci].textContent.replace(/[⇅↑↓]/g,"").trim());});
     });
     applyTableState(tbl);
+  });
+  enhanceDatePickers();
+}
+/* ---------- Custom date picker (Travel Planner style) ---------- */
+function _pad2(n){return (n<10?"0":"")+n;}
+function prettyDate(iso){if(!iso)return "";var p=String(iso).split("-");if(p.length<3)return iso;var d=new Date(+p[0],+p[1]-1,+p[2]);if(isNaN(d))return iso;return d.toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});}
+var _dp=null;
+function _dpClose(){if(_dp){_dp.pop.remove();_dp=null;document.removeEventListener("mousedown",_dpOutside,true);}}
+function _dpOutside(e){if(_dp&&!_dp.pop.contains(e.target)&&!_dp.btn.contains(e.target))_dpClose();}
+function _dpPlace(pop,btn){var r=btn.getBoundingClientRect();var W=252;var ph=pop.offsetHeight||320;var left=Math.max(8,Math.min(r.left,window.innerWidth-W-8));var below=window.innerHeight-r.bottom>=ph+8;var top=below?r.bottom+6:Math.max(8,r.top-ph-6);pop.style.left=left+"px";pop.style.top=top+"px";}
+function _dpOpen(inp,btn,relabel){
+  _dpClose();
+  var pop=document.createElement("div");pop.className="dp-pop";
+  var base=inp.value?new Date(inp.value):new Date();var cur={y:base.getFullYear(),m:base.getMonth()};
+  function draw(){
+    var first=new Date(cur.y,cur.m,1),start=first.getDay(),days=new Date(cur.y,cur.m+1,0).getDate();
+    var todayISO=new Date().getFullYear()+"-"+_pad2(new Date().getMonth()+1)+"-"+_pad2(new Date().getDate());
+    var html='<div class="dp-head"><button type="button" class="dp-nav" data-n="-1" aria-label="Previous month">‹</button><div class="dp-title">'+first.toLocaleDateString(undefined,{month:"long",year:"numeric"})+'</div><button type="button" class="dp-nav" data-n="1" aria-label="Next month">›</button></div>';
+    html+='<div class="dp-grid dp-wd">'+["S","M","T","W","T","F","S"].map(function(w){return '<div class="dp-w">'+w+'</div>';}).join("")+'</div><div class="dp-grid">';
+    for(var i=0;i<start;i++)html+='<div></div>';
+    for(var d=1;d<=days;d++){var iso=cur.y+"-"+_pad2(cur.m+1)+"-"+_pad2(d);var sel=inp.value===iso,today=iso===todayISO;html+='<button type="button" class="dp-day'+(sel?" dp-sel":"")+(today&&!sel?" dp-today":"")+'" data-iso="'+iso+'">'+d+'</button>';}
+    html+='</div>'+(inp.value?'<div class="dp-foot"><button type="button" class="dp-clear">Clear date</button></div>':'');
+    pop.innerHTML=html;
+  }
+  draw();document.body.appendChild(pop);_dpPlace(pop,btn);
+  pop.addEventListener("click",function(e){
+    var nav=e.target.closest(".dp-nav");if(nav){cur.m+=+nav.dataset.n;if(cur.m<0){cur.m=11;cur.y--;}if(cur.m>11){cur.m=0;cur.y++;}draw();_dpPlace(pop,btn);return;}
+    var day=e.target.closest(".dp-day");if(day){inp.value=day.dataset.iso;relabel();_dpClose();inp.dispatchEvent(new Event("change",{bubbles:true}));return;}
+    if(e.target.closest(".dp-clear")){inp.value="";relabel();_dpClose();inp.dispatchEvent(new Event("change",{bubbles:true}));return;}
+  });
+  _dp={pop:pop,btn:btn};
+  setTimeout(function(){document.addEventListener("mousedown",_dpOutside,true);},0);
+}
+function enhanceDatePickers(){
+  document.querySelectorAll('input[type=date]').forEach(function(inp){
+    if(inp.dataset.dp)return;inp.dataset.dp="1";inp.style.display="none";
+    var btn=document.createElement("button");btn.type="button";btn.className="dp-btn";
+    btn.setAttribute("aria-label", inp.getAttribute("aria-label")||"Pick date");
+    function relabel(){btn.innerHTML='<span class="'+(inp.value?"":"dp-ph")+'">'+(inp.value?prettyDate(inp.value):"Select date")+'</span><span class="dp-ic" aria-hidden="true">'+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>';}
+    relabel();
+    btn.addEventListener("click",function(e){e.stopPropagation();if(_dp&&_dp.btn===btn){_dpClose();return;}_dpOpen(inp,btn,relabel);});
+    inp.parentNode.insertBefore(btn,inp);
   });
 }
 function render(){
