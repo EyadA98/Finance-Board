@@ -672,6 +672,9 @@ html.dark .cs-pop .cs-opt{color:#e9e3f7}
 .cs-opt:hover{background:rgba(138,100,200,.2)}
 .cs-sel{background:linear-gradient(110deg,#bba4e4,#8a64c8 45%,#f3b98e);color:#15103a;font-weight:700}
 table.cardize tbody td .cs-btn{max-width:none;flex:1;min-width:120px}
+.bud-income td{font-weight:700}
+html.dark .bud-income td:first-child input{color:#7fd1c4}
+html:not(.dark) .bud-income td:first-child input{color:#1E915F}
 </style>
 </head>
 <body>
@@ -822,19 +825,16 @@ table.cardize tbody td .cs-btn{max-width:none;flex:1;min-width:120px}
 
 <div class="tab" id="tab-budget">
   <div class="grid cards" id="budgetCards"></div>
-  <div class="grid two-col" style="margin-top:18px">
-    <div class="card">
-      <div class="section-head" style="margin-top:0"><h2>Monthly Plan</h2></div>
-      <table id="planTable"><thead><tr><th>Category</th><th>Group</th><th class="num">Planned</th><th></th></tr></thead><tbody></tbody></table>
-      <div style="margin-top:11px"><button class="btn soft" onclick="addPlanItem()">+ Add item</button></div>
-    </div>
-    <div class="card">
-      <div class="section-head" style="margin-top:0"><h2>Actuals for
-        <select id="monthSel" class="bare" onchange="render()"></select></h2>
+  <div class="card" style="margin-top:18px">
+    <div class="section-head" style="margin-top:0"><h2>Budget · <select id="monthSel" class="bare" onchange="render()" aria-label="Budget month"></select></h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn soft" onclick="addPlanItem()">+ Add item</button>
         <button class="btn soft" onclick="addMonth()">+ Month</button>
-        <button class="btn soft" onclick="deleteMonth()" style="color:var(--red)">Delete month</button></div>
-      <table id="actualTable"><thead><tr><th>Category</th><th class="num">Planned</th><th class="num">Actual</th><th class="num">Diff</th></tr></thead><tbody></tbody></table>
+        <button class="btn soft" onclick="deleteMonth()" style="color:var(--red)">Delete month</button>
+      </div>
     </div>
+    <table id="budgetTable"><thead><tr><th>Category</th><th>Group</th><th class="num">Planned</th><th class="num">Actual</th><th class="num">Diff</th><th></th></tr></thead><tbody></tbody></table>
+    <p class="note">Planned = your monthly budget · Actual = what really happened in the selected month. Income rows appear first; leave Actual blank to keep the planned figure.</p>
   </div>
   <div class="card chart-card" style="margin-top:18px"><h3>Planned vs Actual</h3><div class="chart-sub">Where the month went vs the plan</div><canvas id="budgetChart"></canvas></div>
 </div>
@@ -1608,30 +1608,32 @@ function renderBudget(){
   const pt = planTotals();
   const month = document.getElementById("monthSel").value || Object.keys(data.actuals).sort().pop();
   const act = data.actuals[month]||{};
+  const incRows = data.plan.filter(p=>p.group==="Income");
+  const incPlanned = incRows.reduce((s,p)=>s+(+p.amt||0),0);
+  const incActual = incRows.reduce((s,p)=>s+(act[p.cat]!==undefined?(+act[p.cat]||0):(+p.amt||0)),0);
+  const expPlanned = pt.fix+pt.vr;
   const actExp = data.plan.filter(p=>p.group!=="Income").reduce((s,p)=>s+(+act[p.cat]||0),0);
-  const incPlanned = pt.inc; const incAct = act.__income; const incEff = (incAct!==undefined&&incAct!=="")?(+incAct||0):incPlanned;
   document.getElementById("budgetCards").innerHTML =
-    kpi(`Income · ${month}`, sar(incEff), (incAct!==undefined&&incAct!=="")?"Actual income — edit in Actuals":"Planned — set actual in Actuals", "tile-green", ICONS.wallet) +
-    kpi("Planned Expenses", sar(pt.fix+pt.vr), `Fixed ${fmt(pt.fix)} · Variable ${fmt(pt.vr)}`, "tile-ind", ICONS.cart) +
-    kpi("Planned Remaining", `<span class="${pt.rem>=0?"pos":"neg"}">${sar(pt.rem)}</span>`, `${fmt(pt.inc? pt.rem/pt.inc*100:0)}% planned savings`, "tile-lav", ICONS.piggy) +
-    kpi(`Actual Spent · ${month}`, `<span class="${actExp>incEff?"neg":""}">${sar(actExp)}</span>`, `Remaining ${sar(incEff-actExp)} · saved ${fmt(incEff?(incEff-actExp)/incEff*100:0)}%`, "tile-peach", ICONS.chart);
+    kpi(`Income · ${month}`, sar(incActual), `Planned ${fmt(incPlanned)}`, "tile-green", ICONS.wallet) +
+    kpi("Planned Expenses", sar(expPlanned), `Fixed ${fmt(pt.fix)} · Variable ${fmt(pt.vr)}`, "tile-ind", ICONS.cart) +
+    kpi("Planned Remaining", `<span class="${(incPlanned-expPlanned)>=0?"pos":"neg"}">${sar(incPlanned-expPlanned)}</span>`, `${fmt(incPlanned?(incPlanned-expPlanned)/incPlanned*100:0)}% planned savings`, "tile-lav", ICONS.piggy) +
+    kpi(`Actual Saved · ${month}`, `<span class="${(incActual-actExp)>=0?"pos":"neg"}">${sar(incActual-actExp)}</span>`, `Spent ${fmt(actExp)} · ${fmt(incActual?(incActual-actExp)/incActual*100:0)}% saved`, "tile-peach", ICONS.chart);
 
-  document.querySelector("#planTable tbody").innerHTML = data.plan.map((p,i)=>`<tr>
-    <td><input value="${esc(p.cat)}" onchange="upd('plan',${i},'cat',this.value)" aria-label="Category"></td>
-    <td><select onchange="upd('plan',${i},'group',this.value)" aria-label="Group">
-      ${["Income","Fixed","Variable"].map(g=>`<option ${g===p.group?"selected":""}>${g}</option>`).join("")}</select></td>
-    <td class="num"><input type="number" step="0.01" value="${p.amt}" onchange="upd('plan',${i},'amt',+this.value)" aria-label="Planned amount"></td>
-    <td><button class="btn danger" onclick="del('plan',${i})" aria-label="Delete item">✕</button></td></tr>`).join("");
-
-  const incRow = `<tr style="font-weight:700"><td>Income</td><td class="num">${fmt(incPlanned)}</td><td class="num"><input type="number" step="0.01" value="${incAct!==undefined?incAct:""}" placeholder="${fmt(incPlanned)}" onchange="setMonthIncome('${month}',this.value)" aria-label="Actual income for ${month}"></td><td class="num ${(incEff-incPlanned)>=0?"pos":"neg"}">${(incEff-incPlanned)>=0?"+":""}${fmt(incEff-incPlanned)}</td></tr>`;
-  document.querySelector("#actualTable tbody").innerHTML = incRow + data.plan.filter(p=>p.group!=="Income").map(p=>{
-    const a = +act[p.cat]||0, d = p.amt-a;
-    return `<tr><td>${esc(p.cat)}</td><td class="num">${fmt(p.amt)}</td>
-    <td class="num"><input type="number" step="0.01" value="${a}" onchange="setActual('${month}','${esc(p.cat)}',+this.value)" aria-label="Actual amount"></td>
-    <td class="num ${d>=0?"pos":"neg"}">${d>=0?"+":""}${fmt(d)}</td></tr>`;
+  document.querySelector("#budgetTable tbody").innerHTML = data.plan.map((p,i)=>{
+    const isInc = p.group==="Income";
+    const av = act[p.cat];
+    const aNum = av!==undefined?(+av||0):(isInc?(+p.amt||0):0);
+    const d = isInc ? (aNum-(+p.amt||0)) : ((+p.amt||0)-aNum);
+    return `<tr${isInc?' class="bud-income"':''}>
+      <td><input value="${esc(p.cat)}" onchange="upd('plan',${i},'cat',this.value)" aria-label="Category"></td>
+      <td><select onchange="upd('plan',${i},'group',this.value)" aria-label="Group">${["Income","Fixed","Variable"].map(g=>`<option ${g===p.group?"selected":""}>${g}</option>`).join("")}</select></td>
+      <td class="num"><input type="number" step="0.01" value="${p.amt}" onchange="upd('plan',${i},'amt',+this.value)" aria-label="Planned"></td>
+      <td class="num"><input type="number" step="0.01" value="${av!==undefined?av:""}" placeholder="${isInc?fmt(p.amt):"0"}" onchange="setActual('${month}','${esc(p.cat)}',this.value)" aria-label="Actual for ${month}"></td>
+      <td class="num ${d>=0?"pos":"neg"}">${d>=0?"+":""}${fmt(d)}</td>
+      <td><button class="btn danger" onclick="del('plan',${i})" aria-label="Delete item">✕</button></td></tr>`;
   }).join("");
 }
-function setActual(month,cat,val){ if(!data.actuals[month]) data.actuals[month]={}; data.actuals[month][cat]=val; save(); render(); }
+function setActual(month,cat,val){ if(!data.actuals[month]) data.actuals[month]={}; if(val===""||val===undefined||val===null) delete data.actuals[month][cat]; else data.actuals[month][cat]=+val; save(); render(); }
 function setMonthIncome(month,val){ if(!data.actuals[month]) data.actuals[month]={}; if(val===""||val==null) delete data.actuals[month].__income; else data.actuals[month].__income=+val; save(); render(); }
 async function deleteMonth(){
   const m=document.getElementById("monthSel").value; if(!m) return;
