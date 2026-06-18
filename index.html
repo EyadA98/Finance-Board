@@ -7,6 +7,7 @@
 <script>try{var _t=localStorage.getItem('financeBoard.theme')||'dark';document.documentElement.classList.toggle('dark',_t!=='light');}catch(e){document.documentElement.classList.add('dark');}</script>
 <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cdefs%3E%3ClinearGradient id="g" x1="0" y1="0" x2="1" y2="1"%3E%3Cstop offset="0%25" stop-color="%238E7FD0"/%3E%3Cstop offset="100%25" stop-color="%2326225C"/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width="100" height="100" rx="22" fill="url(%23g)"/%3E%3Cg transform="translate(20,21.6) scale(0.3053) translate(-381.64,-176.88)" fill="%23ffffff"%3E%3Cpath d="M381.64 217.79l10.23-40.91h171.15l-10.23 40.91z"/%3E%3Cpath d="M381.64 322.21l10.23 40.91h171.15l-10.23-40.91z"/%3E%3Cpath d="M381.64 290.46l10.23-40.91h186.5l-10.23 40.91z"/%3E%3C/g%3E%3C/svg%3E'>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -575,6 +576,36 @@ html.dark .auth-card input{background:rgba(255,255,255,.06);border:1.5px solid r
 #splash svg{animation:logoIn .7s var(--ease)}
 .splash-bar{width:160px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,#8a64c8,#f3b98e,transparent);background-size:200% 100%;animation:splashSlide 1.4s linear infinite}
 @keyframes splashSlide{0%{background-position:-200% 0}100%{background-position:200% 0}}
+/* Inputs & date pickers — Travel Planner styling */
+td input,td select,select.bare{border-radius:12px}
+input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.9;border-radius:4px;padding:2px}
+input[type=date],input[type=time]{accent-color:#8a64c8}
+html.dark input[type=date]::-webkit-calendar-picker-indicator,html.dark input[type=time]::-webkit-calendar-picker-indicator{filter:invert(1) brightness(1.6) sepia(.25) saturate(2) hue-rotate(215deg);opacity:.8}
+/* === Table tools (search/sort) === */
+.tbl-tools{display:flex;justify-content:flex-end;margin:0 0 10px}
+.tbl-search{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:8px 12px;font-family:inherit;font-size:.86rem;font-weight:500;min-width:190px}
+html:not(.dark) .tbl-search{background:#fff}
+.tbl-search:focus{outline:none;border-color:var(--lavender);box-shadow:0 0 0 3px rgba(138,100,200,.22)}
+th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+th.sortable .sarr{opacity:.45;font-size:.85em;margin-inline-start:4px}
+th.sortable.sorted .sarr{opacity:1;color:var(--lavender)}
+.tbl-empty td{text-align:center!important;color:var(--muted);padding:18px}
+/* === Mobile: card-list tables (<=640px) === */
+@media(max-width:640px){
+  table.cardize{min-width:0!important}
+  table.cardize thead{display:none}
+  table.cardize,table.cardize tbody,table.cardize tbody tr,table.cardize tbody td{display:block;width:100%}
+  table.cardize tbody tr{margin-bottom:12px;border:1px solid var(--border);border-radius:14px;padding:5px 12px;background:rgba(255,255,255,.04)}
+  html:not(.dark) table.cardize tbody tr{background:rgba(255,255,255,.6)}
+  table.cardize tbody td{display:flex;align-items:center;gap:12px;justify-content:space-between;border:none;padding:7px 0;text-align:right}
+  table.cardize tbody td::before{content:attr(data-label);color:var(--muted);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;text-align:left;flex:none}
+  table.cardize tbody td:empty{display:none}
+  table.cardize tbody td input,table.cardize tbody td select{width:auto;max-width:62%;text-align:right}
+  table.cardize tbody td[data-label=""]{justify-content:flex-end}
+  table.cardize tfoot tr{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;border-top:2px solid var(--border);padding-top:8px}
+  table.cardize tfoot td{border:none;padding:2px 4px}
+  .tbl-search{width:100%}
+}
 </style>
 </head>
 <body>
@@ -605,7 +636,7 @@ html.dark .auth-card input{background:rgba(255,255,255,.06);border:1.5px solid r
   <button data-tab="roi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17l6-6 4 4 7-7"/><path d="M14 8h6v6"/></svg>ROI Tracker</button>
   <button data-tab="assets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 21v-8"/></svg>Assets</button>
   <div class="nav-label">Giving</div>
-  <button data-tab="zaka"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 3a8.7 8.7 0 1 0 8 12A10 10 0 0 1 13 3z"/></svg>Zaka</button>
+  <button data-tab="zaka"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 3a8.7 8.7 0 1 0 8 12A10 10 0 0 1 13 3z"/></svg>Zakat</button>
   <div class="side-foot">SAR · Saudi Arabia<br>Data stays in your browser</div>
 </aside>
 
@@ -670,11 +701,11 @@ html.dark .auth-card input{background:rgba(255,255,255,.06);border:1.5px solid r
     <div class="card chart-card"><h3>Assets Overview</h3><div class="chart-sub">Where your wealth sits today</div><canvas id="assetsChart"></canvas></div>
     <div class="card chart-card"><h3>Cash Distribution Across Banks</h3><div class="chart-sub">Liquid funds by institution</div><canvas id="banksChart"></canvas></div>
     <div class="card chart-card"><h3>Portfolio Distribution</h3><div class="chart-sub">Market value vs invested capital</div><canvas id="portfolioChart"></canvas></div>
-    <div class="card chart-card"><h3>Zaka Amounts</h3><div class="chart-sub">Annual zakat paid over the years</div><canvas id="zakaChart"></canvas></div>
+    <div class="card chart-card"><h3>Zakat Amounts</h3><div class="chart-sub">Annual zakat paid over the years</div><canvas id="zakaChart"></canvas></div>
   </div>
   <div class="card chart-card" style="margin-top:18px">
     <div class="chart-head">
-      <div><h3>Net Worth Trend</h3><div class="chart-sub">Backfilled from Zaka history + your snapshots · ★ all-time high</div></div>
+      <div><h3>Net Worth Trend</h3><div class="chart-sub">Backfilled from Zakat history + your snapshots · ★ all-time high</div></div>
       <div class="seg" id="trendSeg" role="group" aria-label="Trend period">
         <button data-r="1y">1Y</button><button data-r="3y">3Y</button><button data-r="all" class="active">All</button>
       </div>
@@ -766,25 +797,25 @@ html.dark .auth-card input{background:rgba(255,255,255,.06);border:1.5px solid r
 </div>
 
 <div class="tab" id="tab-zaka">
-  <div class="section-head"><h2>Zaka Sheet</h2>
+  <div class="section-head"><h2>Zakat Sheet</h2>
     <button class="btn" onclick="addZaka()">+ Add year</button></div>
   <div class="grid cards" id="zakaCards"></div>
   <div class="card" style="margin-top:18px"><table id="zakaTable">
-    <thead><tr><th>Year</th><th>Date (Gregorian)</th><th>Date (Hijri)</th><th class="num">Balance Before</th><th class="num">Zaka Paid</th><th class="num">2.5% Suggested</th><th class="num">Balance After</th><th></th></tr></thead>
+    <thead><tr><th>Year</th><th>Date (Gregorian)</th><th>Date (Hijri)</th><th class="num">Balance Before</th><th class="num">Zakat Paid</th><th class="num">2.5% Suggested</th><th class="num">Balance After</th><th></th></tr></thead>
     <tbody></tbody>
   </table></div>
-  <p class="note">Suggested = 2.5% of balance before zaka. Balance after = before − paid.</p>
+  <p class="note">Suggested = 2.5% of balance before zakat. Balance after = before − paid.</p>
 </div>
 
 <div class="tab" id="tab-snapshots">
   <div class="section-head"><h2>Net Worth Snapshots</h2>
-    <button class="btn peach" onclick="takeSnapshot()">📸 Snapshot today</button></div>
+    <button class="btn peach" onclick="takeSnapshot()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;vertical-align:-3px;margin-inline-end:6px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Snapshot today</button></div>
   <div class="miles" id="milestones"></div>
   <div class="card chart-card" style="margin-bottom:18px"><h3>Net Worth Trend</h3><div class="chart-sub">Every saved point in time · ★ all-time high</div><canvas id="trendChart2"></canvas></div>
   <div class="card"><table id="snapTable">
     <thead><tr><th>Date</th><th class="num">Net Worth</th><th>Source</th><th></th></tr></thead><tbody></tbody>
   </table></div>
-  <p class="note">Historical points were backfilled from your Zaka sheet. Take a snapshot whenever you update balances to build your trend line.</p>
+  <p class="note">Historical points were backfilled from your Zakat sheet. Take a snapshot whenever you update balances to build your trend line.</p>
 </div>
 
 </main>
@@ -794,7 +825,7 @@ html.dark .auth-card input{background:rgba(255,255,255,.06);border:1.5px solid r
   <button data-tab="overview" class="active" aria-label="Overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Home</button>
   <button data-tab="portfolio" aria-label="Portfolio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.5 6.2"/></svg>Portfolio</button>
   <button data-tab="budget" aria-label="Budget"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 15h.01"/></svg>Budget</button>
-  <button data-tab="zaka" aria-label="Zaka"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 3a8.7 8.7 0 1 0 8 12A10 10 0 0 1 13 3z"/></svg>Zaka</button>
+  <button data-tab="zaka" aria-label="Zakat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 3a8.7 8.7 0 1 0 8 12A10 10 0 0 1 13 3z"/></svg>Zakat</button>
   <button onclick="openMore()" aria-label="More tabs"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>More</button>
 </nav>
 
@@ -809,7 +840,7 @@ const PAGES = {
   overview:["Insights","Overview"], snapshots:["Insights","Trend & Snapshots"],
   accounts:["Money","Accounts & Balances"], budget:["Money","Budget Planner"],
   portfolio:["Investing","Investment Portfolio"], purchases:["Investing","Purchase History"],
-  roi:["Investing","ROI Tracker"], assets:["Investing","Assets Inventory"], zaka:["Giving","Zaka"]
+  roi:["Investing","ROI Tracker"], assets:["Investing","Assets Inventory"], zaka:["Giving","Zakat"]
 };
 
 const DEFAULT_DATA = {
@@ -879,13 +910,13 @@ const DEFAULT_DATA = {
     {year:"2026", dateG:"2026-03-22", dateH:"2 Shawal 1447", before:283680.40, paid:6058.00}
   ],
   snapshots: [
-    {date:"2019-05-25", value:62135, source:"Zaka sheet"},
-    {date:"2020-05-19", value:123912, source:"Zaka sheet"},
-    {date:"2021-05-04", value:168638, source:"Zaka sheet"},
-    {date:"2023-04-16", value:136624, source:"Zaka sheet"},
-    {date:"2024-04-03", value:110222, source:"Zaka sheet"},
-    {date:"2025-03-24", value:217884, source:"Zaka sheet"},
-    {date:"2026-03-22", value:283680, source:"Zaka sheet"},
+    {date:"2019-05-25", value:62135, source:"Zakat sheet"},
+    {date:"2020-05-19", value:123912, source:"Zakat sheet"},
+    {date:"2021-05-04", value:168638, source:"Zakat sheet"},
+    {date:"2023-04-16", value:136624, source:"Zakat sheet"},
+    {date:"2024-04-03", value:110222, source:"Zakat sheet"},
+    {date:"2025-03-24", value:217884, source:"Zakat sheet"},
+    {date:"2026-03-22", value:283680, source:"Zakat sheet"},
     {date:"2026-06-12", value:255719.33, source:"Excel import"}
   ]
 };
@@ -1129,6 +1160,9 @@ Chart.defaults.plugins.tooltip.cornerRadius = 12;
 Chart.defaults.plugins.tooltip.titleColor = "#fff";
 Chart.defaults.plugins.tooltip.bodyColor = "rgba(255,255,255,.92)";
 Chart.defaults.font.family = "'Plus Jakarta Sans','Segoe UI',sans-serif";
+if(window.ChartDataLabels){ Chart.register(ChartDataLabels); }
+if(Chart.defaults.plugins) Chart.defaults.plugins.datalabels = {display:false};
+const DLBL={display:true,color:"#fff",font:{weight:"700",size:11},textStrokeColor:"rgba(0,0,0,.35)",textStrokeWidth:2,formatter:function(v,c){var d=c.dataset.data,s=0;for(var i=0;i<d.length;i++)s+=(+d[i]||0);s=s||1;var p=v/s*100;return p>=7?Math.round(p)+"%":"";}};
 Chart.defaults.animation.duration = 750;
 Chart.defaults.animation.easing = "easeOutQuart";
 
@@ -1184,13 +1218,13 @@ function renderCharts(){
   const alloc = allocation();
   mkChart("assetsChart",{type:"doughnut",
     data:{labels:alloc.map(a=>a[0]),datasets:[{data:alloc.map(a=>a[1]),backgroundColor:PALETTE,borderColor:(window.DONUT_SEP||"#15103a"),borderWidth:2.5,hoverOffset:9}]},
-    options:{cutout:"63%",plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>` ${c.label}: ${sar(c.parsed)} (${fmt(c.parsed/t.net*100)}%)`}}}}});
+    options:{cutout:"63%",plugins:{legend:{position:"bottom"},datalabels:DLBL,tooltip:{callbacks:{label:c=>` ${c.label}: ${sar(c.parsed)} (${fmt(c.parsed/t.net*100)}%)`}}}}});
 
   const banks = data.accounts.filter(a=>["Bank Account","Savings","Wallet"].includes(a.type) && +a.balance>0);
   const bankTotal = banks.reduce((s,a)=>s+ +a.balance,0)||1;
   mkChart("banksChart",{type:"doughnut",
     data:{labels:banks.map(b=>b.name),datasets:[{data:banks.map(b=>+b.balance),backgroundColor:PALETTE,borderColor:(window.DONUT_SEP||"#15103a"),borderWidth:2.5,hoverOffset:9}]},
-    options:{cutout:"63%",plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>` ${c.label}: ${sar(c.parsed)} (${fmt(c.parsed/bankTotal*100)}%)`}}}}});
+    options:{cutout:"63%",plugins:{legend:{position:"bottom"},datalabels:DLBL,tooltip:{callbacks:{label:c=>` ${c.label}: ${sar(c.parsed)} (${fmt(c.parsed/bankTotal*100)}%)`}}}}});
 
   mkChart("portfolioChart",{type:"bar",
     data:{labels:hs.map(h=>h.name),datasets:[
@@ -1200,7 +1234,7 @@ function renderCharts(){
 
   const z = [...data.zaka].sort((a,b)=>a.year.localeCompare(b.year));
   mkChart("zakaChart",{type:"line",
-    data:{labels:z.map(r=>r.year),datasets:[{label:"Zaka (SAR)",data:z.map(r=>+r.paid||0),borderColor:"#623f94",backgroundColor:lavGradient,fill:true,tension:.35,pointRadius:4,pointBackgroundColor:"#8a64c8"}]},
+    data:{labels:z.map(r=>r.year),datasets:[{label:"Zakat (SAR)",data:z.map(r=>+r.paid||0),borderColor:"#623f94",backgroundColor:lavGradient,fill:true,tension:.35,pointRadius:4,pointBackgroundColor:"#8a64c8"}]},
     options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>" "+sar(c.parsed.y)}}},scales:{y:{ticks:{callback:v=>"SAR "+fmt(v/1000)+"k"}}}}});
 
   mkChart("trendChart", trendCfg());
@@ -1591,16 +1625,16 @@ function renderZaka(){
   const t = totals();
   const z = nextZaka();
   document.getElementById("zakaCards").innerHTML =
-    kpi(`Last Zaka Paid (${last?esc(last.year):"—"})`, last?sar(last.paid):"—", last?esc(last.dateH||last.dateG):"", "tile-lav", ICONS.moon) +
-    kpi("Total Zaka Paid", sar(data.zaka.reduce((s,x)=>s+(+x.paid||0),0)), "Across all recorded years", "tile-ind", ICONS.coins) +
+    kpi(`Last Zakat Paid (${last?esc(last.year):"—"})`, last?sar(last.paid):"—", last?esc(last.dateH||last.dateG):"", "tile-lav", ICONS.moon) +
+    kpi("Total Zakat Paid", sar(data.zaka.reduce((s,x)=>s+(+x.paid||0),0)), "Across all recorded years", "tile-ind", ICONS.coins) +
     kpi("2.5% of Net Worth", sar(t.net*0.025), "Estimate at today's value", "tile-peach", ICONS.chart) +
-    (z? kpi("Next Zaka (est.)", `${z.days} days`, `${z.date} · projected ${sar(t.net*0.025)}`, "tile-green", ICONS.clock) : "");
+    (z? kpi("Next Zakat (est.)", `${z.days} days`, `${z.date} · projected ${sar(t.net*0.025)}`, "tile-green", ICONS.clock) : "");
   document.querySelector("#zakaTable tbody").innerHTML = data.zaka.map((x,i)=>`<tr>
     <td><input value="${esc(x.year)}" onchange="upd('zaka',${i},'year',this.value)" style="width:72px" aria-label="Year"></td>
     <td><input type="date" value="${x.dateG||""}" onchange="upd('zaka',${i},'dateG',this.value)" aria-label="Gregorian date"></td>
     <td><input value="${esc(x.dateH||"")}" onchange="upd('zaka',${i},'dateH',this.value)" aria-label="Hijri date"></td>
     <td class="num"><input type="number" step="0.01" value="${x.before}" onchange="upd('zaka',${i},'before',+this.value)" aria-label="Balance before"></td>
-    <td class="num"><input type="number" step="0.01" value="${x.paid}" onchange="upd('zaka',${i},'paid',+this.value)" aria-label="Zaka paid"></td>
+    <td class="num"><input type="number" step="0.01" value="${x.paid}" onchange="upd('zaka',${i},'paid',+this.value)" aria-label="Zakat paid"></td>
     <td class="num">${fmt((x.before||0)*0.025)}</td>
     <td class="num">${fmt((x.before||0)-(x.paid||0))}</td>
     <td><button class="btn danger" onclick="del('zaka',${i})" aria-label="Delete year">✕</button></td></tr>`).join("");
@@ -1976,11 +2010,62 @@ async function initAuth(){
 }
 
 /* ---------- Render ---------- */
+/* ---------- Table enhancements: sort, search, mobile cards ---------- */
+const SEARCHABLE=["accountsTable","holdingsTable","purchTable","roiTable","assetsTable","zakaTable","snapTable"];
+const tblState={};
+function _cellText(td){var f=td.querySelector("input,select");if(f){if(f.type==="checkbox")return f.checked?"yes":"no";return (f.value||"").toString();}return td.textContent.trim();}
+function _rowText(tr){return Array.prototype.map.call(tr.cells,_cellText).join(" ").toLowerCase();}
+function _sortVal(td){var raw=_cellText(td);var num=parseFloat(raw.replace(/[^0-9.\-]/g,""));if(/[0-9]/.test(raw)&&!isNaN(num))return num;return raw.toLowerCase();}
+function applyTableState(tbl){
+  var body=tbl.tBodies[0];if(!body)return;var st=tblState[tbl.id]||{};
+  var rows=Array.prototype.filter.call(body.rows,function(r){return !r.classList.contains("tbl-empty");});
+  var q=(st.q||"").trim().toLowerCase();var vis=0;
+  rows.forEach(function(r){var show=!q||_rowText(r).indexOf(q)>=0;r.style.display=show?"":"none";if(show)vis++;});
+  if(st.sortCol!=null){var dir=st.sortDir||1;
+    rows.slice().sort(function(a,b){var av=_sortVal(a.cells[st.sortCol]),bv=_sortVal(b.cells[st.sortCol]);if(av<bv)return -dir;if(av>bv)return dir;return 0;})
+      .forEach(function(r){body.appendChild(r);});}
+  var er=body.querySelector(".tbl-empty");
+  if(q&&vis===0){if(!er){er=document.createElement("tr");er.className="tbl-empty";var td=document.createElement("td");td.colSpan=(tbl.tHead?tbl.tHead.rows[0].cells.length:1);td.textContent="No matches";er.appendChild(td);body.appendChild(er);}er.style.display="";}
+  else if(er){er.style.display="none";}
+}
+function enhanceTables(){
+  document.querySelectorAll("main table").forEach(function(tbl){
+    if(!tbl.id||!tbl.tHead||!tbl.tBodies[0])return;
+    tbl.classList.add("cardize");
+    var heads=Array.prototype.slice.call(tbl.tHead.rows[0].cells);
+    if(!tbl.dataset.enh){
+      tbl.dataset.enh="1";tblState[tbl.id]={};
+      heads.forEach(function(th,ci){
+        if(!th.textContent.trim())return;
+        th.classList.add("sortable");
+        th.insertAdjacentHTML("beforeend",'<span class="sarr">⇅</span>');
+        th.addEventListener("click",function(){
+          var st=tblState[tbl.id];
+          if(st.sortCol===ci)st.sortDir=(st.sortDir||1)*-1;else{st.sortCol=ci;st.sortDir=1;}
+          tbl.tHead.querySelectorAll("th").forEach(function(x){x.classList.remove("sorted");var s=x.querySelector(".sarr");if(s)s.textContent="⇅";});
+          th.classList.add("sorted");var s=th.querySelector(".sarr");if(s)s.textContent=st.sortDir>0?"↑":"↓";
+          applyTableState(tbl);
+        });
+      });
+      if(SEARCHABLE.indexOf(tbl.id)>=0){
+        var tools=document.createElement("div");tools.className="tbl-tools";
+        var inp=document.createElement("input");inp.type="search";inp.className="tbl-search";inp.placeholder="Search…";inp.setAttribute("aria-label","Search table");
+        inp.addEventListener("input",function(){tblState[tbl.id].q=inp.value;applyTableState(tbl);});
+        tools.appendChild(inp);tbl.parentNode.insertBefore(tools,tbl);
+      }
+    }
+    Array.prototype.forEach.call(tbl.tBodies[0].rows,function(tr){
+      Array.prototype.forEach.call(tr.cells,function(td,ci){if(heads[ci])td.setAttribute("data-label",heads[ci].textContent.replace(/[⇅↑↓]/g,"").trim());});
+    });
+    applyTableState(tbl);
+  });
+}
 function render(){
   renderGreeting(); renderInsights(); renderKPIs(); renderAccounts(); renderHoldings(); renderPurchases();
   renderMonthSel(); renderBudget(); renderRoi(); renderAssetsInv();
   renderZaka(); renderSnapshots();
   renderCharts(); renderBudgetChart();
+  try{ enhanceTables(); }catch(e){}
 }
 render();
 animateNumbers();                 // count-up entrance on first load
@@ -2007,10 +2092,10 @@ updThemeIcon();
 
 function openTopMenu(){
   showModal(`<h4>Quick actions</h4><div class="modal-list">
-    <button class="btn soft" onclick="closeModal();exportData()">⬇ &nbsp;Export backup (JSON)</button>
-    <button class="btn soft" onclick="closeModal();document.getElementById('importFile').click()">⬆ &nbsp;Import backup</button>
-    <button class="btn soft" onclick="closeModal();window.print()">🖨 &nbsp;Print statement</button>
-    <button class="btn soft" style="color:var(--red)" onclick="closeModal();resetData()">⟲ &nbsp;Reset to original data</button>
+    <button class="btn soft" onclick="closeModal();exportData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex:none"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg> Export backup (JSON)</button>
+    <button class="btn soft" onclick="closeModal();document.getElementById('importFile').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex:none"><path d="M12 21V9M7 13l5-5 5 5M5 3h14"/></svg> Import backup</button>
+    <button class="btn soft" onclick="closeModal();window.print()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex:none"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg> Print statement</button>
+    <button class="btn soft" style="color:var(--red)" onclick="closeModal();resetData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex:none"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4"/></svg> Reset to original data</button>
   </div>`);
 }
 let _lastY = 0;
