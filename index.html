@@ -621,13 +621,13 @@ input[type=date]:focus,input[type=time]:focus{outline:none;border-color:var(--la
 input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.95}
 /* selects styled exactly like the date inputs, with a lavender chevron */
 select,.tbl-filter,td select,select.bare{-webkit-appearance:none;-moz-appearance:none;appearance:none;border-radius:12px;padding-right:30px;background-repeat:no-repeat;background-position:right 10px center;background-size:14px;font-family:inherit}
-html.dark select,html.dark .tbl-filter,html.dark td select,html.dark select.bare{background-color:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#ece7fb;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23bba4e4' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")}
-html:not(.dark) select,html:not(.dark) .tbl-filter,html:not(.dark) td select,html:not(.dark) select.bare{background-color:#fff;border:1px solid #d4c6ef;color:#2a1d44;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a64c8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>")}
+html.dark select,html.dark .tbl-filter,html.dark td select,html.dark select.bare{background-color:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#ece7fb;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23bba4e4' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 10px center;background-size:14px}
+html:not(.dark) select,html:not(.dark) .tbl-filter,html:not(.dark) td select,html:not(.dark) select.bare{background-color:#fff;border:1px solid #d4c6ef;color:#2a1d44;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a64c8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 10px center;background-size:14px}
 select:focus,.tbl-filter:focus,td select:focus,select.bare:focus{outline:none;border-color:var(--lavender);box-shadow:0 0 0 3px rgba(138,100,200,.22)}
 html.dark select option,html.dark .tbl-filter option,html.dark td select option,html.dark select.bare option{background:#1b1442;color:#ece7fb}
 html:not(.dark) select option,html:not(.dark) .tbl-filter option,html:not(.dark) td select option,html:not(.dark) select.bare option{background:#fff;color:#2a1d44}
 /* === Custom date picker (Travel Planner style) === */
-.dp-btn{width:100%;border-radius:12px;padding:7px 10px;min-height:36px;font-family:inherit;font-size:.9rem;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.dp-btn{width:100%;min-width:132px;white-space:nowrap;border-radius:12px;padding:7px 11px;min-height:36px;font-family:inherit;font-size:.9rem;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:border-color .2s,box-shadow .2s}
 html.dark .dp-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#ece7fb}
 html:not(.dark) .dp-btn{background:#fff;border:1px solid #d4c6ef;color:#2a1d44}
 .dp-btn .dp-ph{opacity:.45}
@@ -653,7 +653,8 @@ html.dark .dp-pop .dp-day{color:#e9e3f7}
 .dp-foot{text-align:center;margin-top:9px}
 .dp-clear{font-size:.72rem;color:var(--muted);background:rgba(138,100,200,.14);border:none;border-radius:8px;padding:4px 12px;cursor:pointer;font-family:inherit;transition:color .2s}
 .dp-clear:hover{color:var(--peach)}
-table.cardize tbody td .dp-btn{max-width:62%}
+table.cardize tbody td .dp-btn{max-width:none;flex:1;min-width:140px}
+#purchTable td:nth-child(5),#roiTable td:nth-child(3),#roiTable td:nth-child(4),#zakaTable td:nth-child(2){min-width:152px}
 </style>
 </head>
 <body>
