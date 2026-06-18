@@ -681,6 +681,18 @@ html:not(.dark) .bud-income td:first-child input{color:#1E915F}
 .bud-dragging{opacity:.45}
 .bud-over td{box-shadow:inset 0 2px 0 0 var(--lavender)}
 @media(max-width:640px){.bud-drag,.bud-dragh{display:none!important}}
+/* === Tablet/iPad: keep wide tables scrolling inside their card === */
+.card:has(table){overflow-x:auto;overflow-y:visible}
+@media(max-width:1024px){ .card{overflow-x:auto} }
+@media(max-width:1100px){
+  #holdingsTable{min-width:920px}
+  #purchTable{min-width:760px}
+  #assetsTable{min-width:820px}
+  #roiTable{min-width:720px}
+  #zakaTable{min-width:720px}
+  #budgetTable{min-width:680px}
+  #snapTable{min-width:640px}
+}
 </style>
 </head>
 <body>
@@ -1971,14 +1983,20 @@ function setSyncState(s){
   el.style.color = s==="error" ? "var(--red)" : "";
 }
 function scheduleSync(){ if(!user) return; clearTimeout(sbTimer); sbTimer = setTimeout(pushCloud, 1500); }
+let _syncWarned=false;
+function _syncFail(e){
+  console.error("Cloud sync failed:", (e&&e.message)||e, e);
+  setSyncState("error");
+  if(!_syncWarned){ _syncWarned=true; toast("⚠ Couldn't sync to your account — saved on this device only. Check your Supabase setup."); }
+}
 async function pushCloud(){
   if(!user) return;
   try{
     setSyncState("busy");
-    const {error} = await supa.from("boards").upsert({user_id:user.id, data:data, updated_at:new Date().toISOString()});
+    const {error} = await supa.from("boards").upsert({user_id:user.id, data:data, updated_at:new Date().toISOString()}, {onConflict:"user_id"});
     if(error) throw error;
-    setSyncState("synced");
-  }catch(e){ setSyncState("error"); }
+    _syncWarned=false; setSyncState("synced");
+  }catch(e){ _syncFail(e); }
 }
 function mergeSnaps(primary, extra){
   var map={}; (primary||[]).forEach(function(s){ if(s&&s.date) map[s.date]=s; });
@@ -1991,9 +2009,9 @@ async function pullCloud(){
   if(!user) return;
   try{
     setSyncState("busy");
-    const {data:row, error} = await supa.from("boards").select("data").eq("user_id", user.id).maybeSingle();
+    const {data:rows, error} = await supa.from("boards").select("data,updated_at").eq("user_id", user.id).order("updated_at",{ascending:false}).limit(1);
     if(error) throw error;
-    const rec = row && row.data;
+    const rec = rows && rows[0] && rows[0].data;
     if(rec && rec.accounts){
       if(!data.updatedAt || (rec.updatedAt && rec.updatedAt > data.updatedAt)){
         const localSnaps = (data.snapshots||[]).slice();
@@ -2004,7 +2022,7 @@ async function pullCloud(){
       } else if(data.updatedAt > (rec.updatedAt||"")) return pushCloud();
     } else return pushCloud();   // first login on this account: upload current data
     setSyncState("synced");
-  }catch(e){ setSyncState("error"); }
+  }catch(e){ _syncFail(e); }
 }
 
 /* ----- Auth UI ----- */
