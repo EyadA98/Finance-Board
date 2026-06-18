@@ -580,7 +580,7 @@ html.dark .auth-card input{background:rgba(255,255,255,.06);border:1.5px solid r
 td input,td select,select.bare{border-radius:12px}
 input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.9;border-radius:4px;padding:2px}
 input[type=date],input[type=time]{accent-color:#8a64c8}
-html.dark input[type=date]::-webkit-calendar-picker-indicator,html.dark input[type=time]::-webkit-calendar-picker-indicator{filter:invert(1) brightness(1.6) sepia(.25) saturate(2) hue-rotate(215deg);opacity:.8}
+/* date/time picker is themed automatically via color-scheme (matches Travel Planner) */
 /* === Table tools (search/sort) === */
 .tbl-tools{display:flex;justify-content:flex-end;margin:0 0 10px}
 .tbl-search{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:8px 12px;font-family:inherit;font-size:.86rem;font-weight:500;min-width:190px}
@@ -606,6 +606,13 @@ th.sortable.sorted .sarr{opacity:1;color:var(--lavender)}
   table.cardize tfoot td{border:none;padding:2px 4px}
   .tbl-search{width:100%}
 }
+.tbl-filter{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:8px 12px;font-family:inherit;font-size:.86rem;font-weight:600;cursor:pointer}
+html:not(.dark) .tbl-filter{background:#fff}
+.tbl-filter:focus{outline:none;border-color:var(--lavender);box-shadow:0 0 0 3px rgba(138,100,200,.22)}
+html.dark .tbl-filter option{background:#1b1442;color:#ece7fb}
+.tbl-tools{gap:8px;flex-wrap:wrap}
+@media(max-width:640px){.tbl-filter{flex:1}}
+.pill.live{margin-inline-start:7px;vertical-align:1px}
 </style>
 </head>
 <body>
@@ -720,7 +727,7 @@ th.sortable.sorted .sarr{opacity:1;color:var(--lavender)}
   <div class="card"><table id="accountsTable">
     <thead><tr><th>Name</th><th>Type</th><th class="num">Balance</th><th></th></tr></thead>
     <tbody></tbody>
-    <tfoot><tr><td>Total</td><td></td><td class="num" id="accountsTotal"></td><td></td></tr></tfoot>
+    <tfoot><tr><td>Total</td><td></td><td class="num" id="accountsTotal" data-foot="sum"></td><td></td></tr></tfoot>
   </table></div>
   <p class="note">Edits save automatically and update net worth everywhere.</p>
 </div>
@@ -735,7 +742,7 @@ th.sortable.sorted .sarr{opacity:1;color:var(--lavender)}
   <div class="card"><table id="holdingsTable">
     <thead><tr><th>Item</th><th>Type</th><th>Symbol</th><th class="num">Total Qty</th><th class="num">Avg Cost</th><th class="num">Invested</th><th class="num">Current Price</th><th class="num">Market Value</th><th class="num">P/L</th><th class="num">P/L %</th></tr></thead>
     <tbody></tbody>
-    <tfoot><tr><td>Total</td><td></td><td></td><td></td><td></td><td class="num" id="holdCostTotal"></td><td></td><td class="num" id="holdValTotal"></td><td class="num" id="holdPLTotal"></td><td class="num" id="holdPLPct"></td></tr></tfoot>
+    <tfoot><tr><td>Total</td><td></td><td></td><td></td><td></td><td class="num" id="holdCostTotal" data-foot="sum"></td><td></td><td class="num" id="holdValTotal" data-foot="sum"></td><td class="num" id="holdPLTotal" data-foot="sum" data-signed="1"></td><td class="num" id="holdPLPct" data-foot="ratio" data-num="8" data-den="5"></td></tr></tfoot>
   </table></div>
   <p class="note">Quantities, weighted-average cost and invested amounts come live from Purchases (Owned only). <b>Live prices:</b> gold per gram 24k via gold-api.com (USD→SAR at 3.75) · stocks via Yahoo Finance — set the symbol (Tadawul: 2222.SR, 1180.SR · US: AAPL). Prices auto-refresh when the page opens and on demand via <b>Update prices now</b>; the timestamp shows the last successful fetch. If a quote can't be reached (some networks block the market feed), the saved price stays and you can tap any price cell to edit it manually.</p>
   <div class="section-head" style="margin-top:25px"><h2>Watchlist</h2>
@@ -749,7 +756,7 @@ th.sortable.sorted .sarr{opacity:1;color:var(--lavender)}
   <div class="card"><table id="purchTable">
     <thead><tr><th>#</th><th>Stock / Material</th><th class="num">Qty / Weight</th><th class="num">Unit Cost</th><th>Date</th><th class="num">Total Cost</th><th>Status</th><th></th></tr></thead>
     <tbody></tbody>
-    <tfoot><tr><td></td><td>Total</td><td></td><td></td><td></td><td class="num" id="purchTotal"></td><td></td><td></td></tr></tfoot>
+    <tfoot><tr><td></td><td>Total</td><td></td><td></td><td></td><td class="num" id="purchTotal" data-foot="sum"></td><td></td><td></td></tr></tfoot>
   </table></div>
   <p class="note">Every change here immediately updates Portfolio totals, weighted-average cost and P/L. Mark a lot as "Sold" to exclude it.</p>
 </div>
@@ -778,7 +785,7 @@ th.sortable.sorted .sarr{opacity:1;color:var(--lavender)}
   <div class="card"><table id="roiTable">
     <thead><tr><th>Account / Asset</th><th>Type</th><th>Start</th><th>End</th><th class="num">Amount</th><th class="num">Profit</th><th class="num">Profit %</th><th>Notes</th><th></th></tr></thead>
     <tbody></tbody>
-    <tfoot><tr><td>Total</td><td></td><td></td><td></td><td class="num" id="roiAmtTotal"></td><td class="num" id="roiProfitTotal"></td><td class="num" id="roiPctTotal"></td><td></td><td></td></tr></tfoot>
+    <tfoot><tr><td>Total</td><td></td><td></td><td></td><td class="num" id="roiAmtTotal" data-foot="sum"></td><td class="num" id="roiProfitTotal" data-foot="sum" data-signed="1"></td><td class="num" id="roiPctTotal" data-foot="ratio" data-num="5" data-den="4"></td><td></td><td></td></tr></tfoot>
   </table></div>
   <p class="note">Profit % is calculated automatically (profit ÷ amount).</p>
 </div>
@@ -790,8 +797,8 @@ th.sortable.sorted .sarr{opacity:1;color:var(--lavender)}
     <thead><tr><th>Description</th><th class="num">Qty</th><th class="num">Cost</th><th class="num">Selling Price</th><th>Sold</th><th></th></tr></thead>
     <tbody></tbody>
     <tfoot>
-      <tr><td>Total</td><td></td><td class="num" id="assetCostTotal"></td><td class="num" id="assetSellTotal"></td><td></td><td></td></tr>
-      <tr><td>Difference</td><td></td><td></td><td class="num" id="assetDiff"></td><td></td><td></td></tr>
+      <tr><td>Total</td><td></td><td class="num" id="assetCostTotal" data-foot="sum"></td><td class="num" id="assetSellTotal" data-foot="sum"></td><td></td><td></td></tr>
+      <tr><td>Difference</td><td></td><td></td><td class="num" id="assetDiff" data-foot="diff" data-num="3" data-sub="2" data-signed="1"></td><td></td><td></td></tr>
     </tfoot>
   </table></div>
 </div>
@@ -987,11 +994,11 @@ function promptModal(title, msg, val){
 }
 function openMore(){
   showModal(`<h4>More</h4><div class="modal-list">
-    <button class="btn soft" onclick="closeModal();goTab('accounts')">🏦 Accounts</button>
-    <button class="btn soft" onclick="closeModal();goTab('purchases')">🛒 Purchases</button>
-    <button class="btn soft" onclick="closeModal();goTab('roi')">📈 ROI Tracker</button>
-    <button class="btn soft" onclick="closeModal();goTab('assets')">📦 Assets</button>
-    <button class="btn soft" onclick="closeModal();goTab('snapshots')">📷 Snapshots</button>
+    <button class="btn soft" onclick="closeModal();goTab('accounts')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex:none"><path d="M3 21h18M4 10h16L12 3 4 10zM6 10v8M10 10v8M14 10v8M18 10v8"/></svg> Accounts</button>
+    <button class="btn soft" onclick="closeModal();goTab('purchases')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex:none"><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M3 4h2l2.5 11h10L20 8H6"/></svg> Purchases</button>
+    <button class="btn soft" onclick="closeModal();goTab('roi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex:none"><path d="M3 17l6-6 4 4 7-7M14 8h6v6"/></svg> ROI Tracker</button>
+    <button class="btn soft" onclick="closeModal();goTab('assets')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex:none"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8zM3 8l9 5 9-5M12 21v-8"/></svg> Assets</button>
+    <button class="btn soft" onclick="closeModal();goTab('snapshots')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex:none"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg> Snapshots</button>
   </div>`);
 }
 
@@ -2013,20 +2020,50 @@ async function initAuth(){
 /* ---------- Table enhancements: sort, search, mobile cards ---------- */
 const SEARCHABLE=["accountsTable","holdingsTable","purchTable","roiTable","assetsTable","zakaTable","snapTable"];
 const tblState={};
+const FILTERS={
+  purchTable:[{col:1,label:"Item"},{col:4,label:"Year",year:true}],
+  holdingsTable:[{col:1,label:"Type"}],
+  accountsTable:[{col:1,label:"Type"}],
+  roiTable:[{col:1,label:"Type"},{col:2,label:"Year",year:true}],
+  zakaTable:[{col:0,label:"Year",year:true}],
+  snapTable:[{col:0,label:"Year",year:true}]
+};
+const tblFilterSel={};
 function _cellText(td){var f=td.querySelector("input,select");if(f){if(f.type==="checkbox")return f.checked?"yes":"no";return (f.value||"").toString();}return td.textContent.trim();}
 function _rowText(tr){return Array.prototype.map.call(tr.cells,_cellText).join(" ").toLowerCase();}
 function _sortVal(td){var raw=_cellText(td);var num=parseFloat(raw.replace(/[^0-9.\-]/g,""));if(/[0-9]/.test(raw)&&!isNaN(num))return num;return raw.toLowerCase();}
+function _num(td){if(!td)return 0;var t=_cellText(td).replace(/,/g,"").replace(/[−–]/g,"-").replace(/[^0-9.\-]/g,"");var x=parseFloat(t);return isNaN(x)?0:x;}
+function _yearOf(td){var m=_cellText(td).match(/(\d{4})/);return m?m[1]:"";}
+function _filtVal(f,td){return f.year?_yearOf(td):_cellText(td);}
+function recalcFooter(tbl,vis){
+  var tf=tbl.tFoot;if(!tf)return;
+  function sumCol(ci){var s=0;vis.forEach(function(r){s+=_num(r.cells[ci]);});return s;}
+  Array.prototype.forEach.call(tf.querySelectorAll("[data-foot]"),function(cell){
+    var kind=cell.getAttribute("data-foot"),signed=cell.hasAttribute("data-signed"),val;
+    if(kind==="ratio"){var nu=sumCol(+cell.getAttribute("data-num")),de=sumCol(+cell.getAttribute("data-den"));cell.textContent=de?pct(nu/de):"—";cell.classList.remove("pos","neg");cell.classList.add(nu>=0?"pos":"neg");return;}
+    if(kind==="diff"){val=sumCol(+cell.getAttribute("data-num"))-sumCol(+cell.getAttribute("data-sub"));signed=true;}
+    else{val=sumCol(cell.cellIndex);}
+    cell.textContent=(signed&&val>=0?"+":"")+fmt(val);
+    if(signed){cell.classList.remove("pos","neg");cell.classList.add(val>=0?"pos":"neg");}
+  });
+}
 function applyTableState(tbl){
   var body=tbl.tBodies[0];if(!body)return;var st=tblState[tbl.id]||{};
   var rows=Array.prototype.filter.call(body.rows,function(r){return !r.classList.contains("tbl-empty");});
-  var q=(st.q||"").trim().toLowerCase();var vis=0;
-  rows.forEach(function(r){var show=!q||_rowText(r).indexOf(q)>=0;r.style.display=show?"":"none";if(show)vis++;});
+  var q=(st.q||"").trim().toLowerCase();var fls=st.filters||{};var defs=FILTERS[tbl.id]||[];var vis=0;
+  rows.forEach(function(r){
+    var show=(!q||_rowText(r).indexOf(q)>=0);
+    if(show)for(var i=0;i<defs.length;i++){var v=fls[i];if(v&&_filtVal(defs[i],r.cells[defs[i].col])!==v){show=false;break;}}
+    r.style.display=show?"":"none";if(show)vis++;
+  });
   if(st.sortCol!=null){var dir=st.sortDir||1;
     rows.slice().sort(function(a,b){var av=_sortVal(a.cells[st.sortCol]),bv=_sortVal(b.cells[st.sortCol]);if(av<bv)return -dir;if(av>bv)return dir;return 0;})
       .forEach(function(r){body.appendChild(r);});}
+  var anyFilter=q||Object.keys(fls).some(function(k){return fls[k];});
   var er=body.querySelector(".tbl-empty");
-  if(q&&vis===0){if(!er){er=document.createElement("tr");er.className="tbl-empty";var td=document.createElement("td");td.colSpan=(tbl.tHead?tbl.tHead.rows[0].cells.length:1);td.textContent="No matches";er.appendChild(td);body.appendChild(er);}er.style.display="";}
+  if(vis===0&&anyFilter){if(!er){er=document.createElement("tr");er.className="tbl-empty";var td=document.createElement("td");td.colSpan=(tbl.tHead?tbl.tHead.rows[0].cells.length:1);td.textContent="No matches";er.appendChild(td);body.appendChild(er);}er.style.display="";}
   else if(er){er.style.display="none";}
+  recalcFooter(tbl,rows.filter(function(r){return r.style.display!=="none";}));
 }
 function enhanceTables(){
   document.querySelectorAll("main table").forEach(function(tbl){
@@ -2034,7 +2071,7 @@ function enhanceTables(){
     tbl.classList.add("cardize");
     var heads=Array.prototype.slice.call(tbl.tHead.rows[0].cells);
     if(!tbl.dataset.enh){
-      tbl.dataset.enh="1";tblState[tbl.id]={};
+      tbl.dataset.enh="1";tblState[tbl.id]={filters:{}};
       heads.forEach(function(th,ci){
         if(!th.textContent.trim())return;
         th.classList.add("sortable");
@@ -2047,12 +2084,33 @@ function enhanceTables(){
           applyTableState(tbl);
         });
       });
-      if(SEARCHABLE.indexOf(tbl.id)>=0){
+      var defs=FILTERS[tbl.id];
+      if(SEARCHABLE.indexOf(tbl.id)>=0||defs){
         var tools=document.createElement("div");tools.className="tbl-tools";
-        var inp=document.createElement("input");inp.type="search";inp.className="tbl-search";inp.placeholder="Search…";inp.setAttribute("aria-label","Search table");
-        inp.addEventListener("input",function(){tblState[tbl.id].q=inp.value;applyTableState(tbl);});
-        tools.appendChild(inp);tbl.parentNode.insertBefore(tools,tbl);
+        if(defs){
+          tblFilterSel[tbl.id]=defs.map(function(def,fi){
+            var fsel=document.createElement("select");fsel.className="tbl-filter";fsel.setAttribute("aria-label","Filter by "+def.label);
+            fsel.addEventListener("change",function(){tblState[tbl.id].filters[fi]=fsel.value;applyTableState(tbl);});
+            tools.appendChild(fsel);return fsel;
+          });
+        }
+        if(SEARCHABLE.indexOf(tbl.id)>=0){
+          var inp=document.createElement("input");inp.type="search";inp.className="tbl-search";inp.placeholder="Search…";inp.setAttribute("aria-label","Search table");
+          inp.addEventListener("input",function(){tblState[tbl.id].q=inp.value;applyTableState(tbl);});
+          tools.appendChild(inp);
+        }
+        tbl.parentNode.insertBefore(tools,tbl);
       }
+    }
+    var defs2=FILTERS[tbl.id];
+    if(defs2&&tblFilterSel[tbl.id]){
+      defs2.forEach(function(def,fi){
+        var fs=tblFilterSel[tbl.id][fi];if(!fs)return;var curv=fs.value,fvals=[];
+        Array.prototype.forEach.call(tbl.tBodies[0].rows,function(tr){if(tr.classList.contains("tbl-empty"))return;var v=_filtVal(def,tr.cells[def.col]);if(v&&fvals.indexOf(v)<0)fvals.push(v);});
+        fvals.sort(def.year?function(a,b){return b-a;}:undefined);
+        fs.innerHTML='<option value="">All '+def.label+'</option>'+fvals.map(function(v){return '<option>'+String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;")+'</option>';}).join("");
+        if(fvals.indexOf(curv)>=0)fs.value=curv;else{fs.value="";tblState[tbl.id].filters[fi]="";}
+      });
     }
     Array.prototype.forEach.call(tbl.tBodies[0].rows,function(tr){
       Array.prototype.forEach.call(tr.cells,function(td,ci){if(heads[ci])td.setAttribute("data-label",heads[ci].textContent.replace(/[⇅↑↓]/g,"").trim());});
