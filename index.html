@@ -1013,6 +1013,18 @@ const TYPE_MAP = {"Bank":"Bank Account","Outstanding Receivables":"Receivable"};
 let data = load();
 function load(){
   try{
+    // Signed-in users: load their OWN cached board first, so a refresh shows your
+    // real numbers immediately instead of briefly flashing the sample/seed data.
+    if(!localStorage.getItem("financeBoard.guest")){
+      let bestK=null, bestT="";
+      for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        if(k && k.indexOf(KEY+":")===0){
+          try{ const d=JSON.parse(localStorage.getItem(k)); const t=(d&&d.updatedAt)||""; if(!bestK || t>bestT){ bestK=k; bestT=t; } }catch(e){}
+        }
+      }
+      if(bestK) return fill(migrate(JSON.parse(localStorage.getItem(bestK))));
+    }
     const s = localStorage.getItem(KEY);
     if(s) return fill(migrate(JSON.parse(s)));
     const old = localStorage.getItem("financeBoard.v3") || localStorage.getItem("financeBoard.v2") || localStorage.getItem("financeBoard.v1");
