@@ -831,7 +831,8 @@ table.cardize tbody td .cs-btn{max-width:none;flex:1;min-width:120px}
     <div class="card">
       <div class="section-head" style="margin-top:0"><h2>Actuals for
         <select id="monthSel" class="bare" onchange="render()"></select></h2>
-        <button class="btn soft" onclick="addMonth()">+ Month</button></div>
+        <button class="btn soft" onclick="addMonth()">+ Month</button>
+        <button class="btn soft" onclick="deleteMonth()" style="color:var(--red)">Delete month</button></div>
       <table id="actualTable"><thead><tr><th>Category</th><th class="num">Planned</th><th class="num">Actual</th><th class="num">Diff</th></tr></thead><tbody></tbody></table>
     </div>
   </div>
@@ -879,7 +880,7 @@ table.cardize tbody td .cs-btn{max-width:none;flex:1;min-width:120px}
   <div class="miles" id="milestones"></div>
   <div class="card chart-card" style="margin-bottom:18px"><h3>Net Worth Trend</h3><div class="chart-sub">Every saved point in time · ★ all-time high</div><canvas id="trendChart2"></canvas></div>
   <div class="card"><table id="snapTable">
-    <thead><tr><th>Date</th><th class="num">Net Worth</th><th>Source</th><th></th></tr></thead><tbody></tbody>
+    <thead><tr><th>Date</th><th class="num">Net Worth</th><th class="num">Cash</th><th class="num">Investments</th><th class="num">Assets</th><th>Source</th><th></th></tr></thead><tbody></tbody>
   </table></div>
   <p class="note">Historical points were backfilled from your Zakat sheet. Take a snapshot whenever you update balances to build your trend line.</p>
 </div>
@@ -1608,11 +1609,12 @@ function renderBudget(){
   const month = document.getElementById("monthSel").value || Object.keys(data.actuals).sort().pop();
   const act = data.actuals[month]||{};
   const actExp = data.plan.filter(p=>p.group!=="Income").reduce((s,p)=>s+(+act[p.cat]||0),0);
+  const incPlanned = pt.inc; const incAct = act.__income; const incEff = (incAct!==undefined&&incAct!=="")?(+incAct||0):incPlanned;
   document.getElementById("budgetCards").innerHTML =
-    kpi("Income", sar(pt.inc), "Salary + other sources", "tile-green", ICONS.wallet) +
+    kpi(`Income · ${month}`, sar(incEff), (incAct!==undefined&&incAct!=="")?"Actual income — edit in Actuals":"Planned — set actual in Actuals", "tile-green", ICONS.wallet) +
     kpi("Planned Expenses", sar(pt.fix+pt.vr), `Fixed ${fmt(pt.fix)} · Variable ${fmt(pt.vr)}`, "tile-ind", ICONS.cart) +
-    kpi("Planned Remaining", `<span class="pos">${sar(pt.rem)}</span>`, `${fmt(pt.inc? pt.rem/pt.inc*100:0)}% savings rate`, "tile-lav", ICONS.piggy) +
-    kpi(`Actual Spent (${month})`, `<span class="${actExp>pt.fix+pt.vr?"neg":""}">${sar(actExp)}</span>`, `Actual remaining ${sar(pt.inc-actExp)}`, "tile-peach", ICONS.chart);
+    kpi("Planned Remaining", `<span class="${pt.rem>=0?"pos":"neg"}">${sar(pt.rem)}</span>`, `${fmt(pt.inc? pt.rem/pt.inc*100:0)}% planned savings`, "tile-lav", ICONS.piggy) +
+    kpi(`Actual Spent · ${month}`, `<span class="${actExp>incEff?"neg":""}">${sar(actExp)}</span>`, `Remaining ${sar(incEff-actExp)} · saved ${fmt(incEff?(incEff-actExp)/incEff*100:0)}%`, "tile-peach", ICONS.chart);
 
   document.querySelector("#planTable tbody").innerHTML = data.plan.map((p,i)=>`<tr>
     <td><input value="${esc(p.cat)}" onchange="upd('plan',${i},'cat',this.value)" aria-label="Category"></td>
@@ -1621,7 +1623,8 @@ function renderBudget(){
     <td class="num"><input type="number" step="0.01" value="${p.amt}" onchange="upd('plan',${i},'amt',+this.value)" aria-label="Planned amount"></td>
     <td><button class="btn danger" onclick="del('plan',${i})" aria-label="Delete item">✕</button></td></tr>`).join("");
 
-  document.querySelector("#actualTable tbody").innerHTML = data.plan.filter(p=>p.group!=="Income").map(p=>{
+  const incRow = `<tr style="font-weight:700"><td>Income</td><td class="num">${fmt(incPlanned)}</td><td class="num"><input type="number" step="0.01" value="${incAct!==undefined?incAct:""}" placeholder="${fmt(incPlanned)}" onchange="setMonthIncome('${month}',this.value)" aria-label="Actual income for ${month}"></td><td class="num ${(incEff-incPlanned)>=0?"pos":"neg"}">${(incEff-incPlanned)>=0?"+":""}${fmt(incEff-incPlanned)}</td></tr>`;
+  document.querySelector("#actualTable tbody").innerHTML = incRow + data.plan.filter(p=>p.group!=="Income").map(p=>{
     const a = +act[p.cat]||0, d = p.amt-a;
     return `<tr><td>${esc(p.cat)}</td><td class="num">${fmt(p.amt)}</td>
     <td class="num"><input type="number" step="0.01" value="${a}" onchange="setActual('${month}','${esc(p.cat)}',+this.value)" aria-label="Actual amount"></td>
@@ -1629,6 +1632,14 @@ function renderBudget(){
   }).join("");
 }
 function setActual(month,cat,val){ if(!data.actuals[month]) data.actuals[month]={}; data.actuals[month][cat]=val; save(); render(); }
+function setMonthIncome(month,val){ if(!data.actuals[month]) data.actuals[month]={}; if(val===""||val==null) delete data.actuals[month].__income; else data.actuals[month].__income=+val; save(); render(); }
+async function deleteMonth(){
+  const m=document.getElementById("monthSel").value; if(!m) return;
+  if(Object.keys(data.actuals).length<=1){ toast("Keep at least one month"); return; }
+  if(await confirmModal("Delete "+m+"?","This removes all actual entries for "+m+". This cannot be undone.")){
+    delete data.actuals[m]; save(); renderMonthSel(); render(); toast("Deleted "+m);
+  }
+}
 function addPlanItem(){ data.plan.push({cat:"New item",group:"Variable",amt:0}); save(); render(); }
 async function addMonth(){
   const m = await promptModal("Add month", "Format: YYYY-MM", new Date().toISOString().slice(0,7));
@@ -1714,10 +1725,15 @@ function renderSnapshots(){
   const sorted = [...data.snapshots].sort((a,b)=>a.date.localeCompare(b.date));
   const ath = sorted.reduce((m,x)=>x.value>m.value?x:m, sorted[0]||{value:0});
   const snaps = [...sorted].reverse();
+  const dash = v => (v==null)?'<span style="opacity:.4">—</span>':sar(v);
   document.querySelector("#snapTable tbody").innerHTML = snaps.map(s=>{
     const i = data.snapshots.indexOf(s);
     return `<tr><td>${s.date} ${s===ath?'<span class="pill" style="background:rgba(212,161,30,.15);color:#A87F12">★ All-time high</span>':""}</td>
-    <td class="num">${sar(s.value)}</td><td><span class="pill">${esc(s.source||"")}</span></td>
+    <td class="num">${sar(s.value)}</td>
+    <td class="num">${dash(s.cash)}</td>
+    <td class="num">${dash(s.portfolioValue)}</td>
+    <td class="num">${dash(s.assetsValue)}</td>
+    <td><span class="pill">${esc(s.source||"")}</span></td>
     <td><button class="btn danger" onclick="del('snapshots',${i})" aria-label="Delete snapshot">✕</button></td></tr>`;
   }).join("");
 
@@ -1730,14 +1746,31 @@ function renderSnapshots(){
   if(ath && ath.value) out.push(`<span class="mile">⭐ All-time high ${sar(ath.value)} <span>· ${ath.date}</span></span>`);
   document.getElementById("milestones").innerHTML = out.join("");
 }
-function takeSnapshot(){
+function buildSnapshot(){
   const today = new Date().toISOString().slice(0,10);
-  const t = totals();
-  const wasATH = t.net > Math.max(...data.snapshots.filter(s=>s.date!==today).map(s=>s.value), 0);
-  data.snapshots = data.snapshots.filter(s=>s.date!==today);
-  data.snapshots.push({date:today, value:+t.net.toFixed(2), source:"Manual snapshot"});
-  save(true); render();
-  toast(wasATH? "📸 Snapshot saved — new all-time high! 🎉" : "📸 Snapshot saved");
+  const t = totals(), hs = holdings(), r = n=>Math.round((+n||0)*100)/100;
+  const cash = data.accounts.filter(a=>["Cash","Wallet"].includes(a.type)).reduce((s,a)=>s+(+a.balance||0),0);
+  const assetsValue = (data.assetsInv||[]).filter(a=>!a.sold).reduce((s,a)=>s+(+a.selling|| +a.cost||0),0);
+  return {
+    date:today, ts:new Date().toISOString(),
+    value:r(t.net), net:r(t.net),
+    accountsTotal:r(t.acc), portfolioValue:r(t.inv), investmentsCost:r(t.cost),
+    cash:r(cash), assetsValue:r(assetsValue), liabilities:0, currency:"SAR",
+    accounts:data.accounts.map(a=>({name:a.name,type:a.type,balance:r(a.balance)})),
+    portfolio:hs.map(h=>({name:h.name,type:h.assetType,qty:h.qty,price:r(h.price),value:r(h.value),invested:r(h.invested),pl:r(h.pl)})),
+    source:"Manual snapshot", note:""
+  };
+}
+function takeSnapshot(){
+  const snap = buildSnapshot();
+  const exists = data.snapshots.some(s=>s.date===snap.date);
+  const wasATH = snap.net > Math.max(...data.snapshots.filter(s=>s.date!==snap.date).map(s=>+s.value||0), 0);
+  data.snapshots = data.snapshots.filter(s=>s.date!==snap.date);
+  data.snapshots.push(snap);
+  save(true);
+  if(user && typeof pushCloud==="function"){ try{ pushCloud(); }catch(e){} }
+  render();
+  toast(exists ? "📸 Today's snapshot updated" : (wasATH ? "📸 Snapshot saved — new all-time high! 🎉" : "📸 Snapshot saved"));
 }
 
 /* ---------- Shared: edit, delete + undo ---------- */
@@ -1929,6 +1962,13 @@ async function pushCloud(){
     setSyncState("synced");
   }catch(e){ setSyncState("error"); }
 }
+function mergeSnaps(primary, extra){
+  var map={}; (primary||[]).forEach(function(s){ if(s&&s.date) map[s.date]=s; });
+  (extra||[]).forEach(function(s){ if(!s||!s.date) return; var ex=map[s.date];
+    if(!ex){ map[s.date]=s; }
+    else if((s.ts&&(!ex.ts||s.ts>ex.ts)) || (!ex.ts&&Object.keys(s).length>Object.keys(ex).length)){ map[s.date]=s; } });
+  return Object.keys(map).map(function(k){return map[k];}).sort(function(x,y){return String(x.date).localeCompare(String(y.date));});
+}
 async function pullCloud(){
   if(!user) return;
   try{
@@ -1938,7 +1978,9 @@ async function pullCloud(){
     const rec = row && row.data;
     if(rec && rec.accounts){
       if(!data.updatedAt || (rec.updatedAt && rec.updatedAt > data.updatedAt)){
+        const localSnaps = (data.snapshots||[]).slice();
         data = fill(migrate(rec));
+        data.snapshots = mergeSnaps(data.snapshots, localSnaps);
         try{ localStorage.setItem(KEY+":"+user.id, JSON.stringify(data)); }catch(e){}
         render();
       } else if(data.updatedAt > (rec.updatedAt||"")) return pushCloud();
