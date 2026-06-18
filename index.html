@@ -853,11 +853,11 @@ table.cardize tbody td .cs-btn{max-width:none;flex:1;min-width:120px}
   <div class="section-head"><h2>Assets Inventory</h2>
     <button class="btn" onclick="addAsset()">+ Add asset</button></div>
   <div class="card"><table id="assetsTable">
-    <thead><tr><th>Description</th><th class="num">Qty</th><th class="num">Cost</th><th class="num">Selling Price</th><th>Sold</th><th>Date of Purchase</th><th></th></tr></thead>
+    <thead><tr><th>Description</th><th class="num">Qty</th><th>Date of Purchase</th><th class="num">Cost</th><th class="num">Selling Price</th><th>Sold</th><th>Date of Sale</th><th></th></tr></thead>
     <tbody></tbody>
     <tfoot>
-      <tr><td>Total</td><td></td><td class="num" id="assetCostTotal" data-foot="sum"></td><td class="num" id="assetSellTotal" data-foot="sum"></td><td></td><td></td><td></td></tr>
-      <tr><td>Difference</td><td></td><td></td><td class="num" id="assetDiff" data-foot="diff" data-num="3" data-sub="2" data-signed="1"></td><td></td><td></td><td></td></tr>
+      <tr><td>Total</td><td></td><td></td><td class="num" id="assetCostTotal" data-foot="sum"></td><td class="num" id="assetSellTotal" data-foot="sum"></td><td></td><td></td><td></td></tr>
+      <tr><td>Difference</td><td></td><td></td><td></td><td class="num" id="assetDiff" data-foot="diff" data-num="4" data-sub="3" data-signed="1"></td><td></td><td></td><td></td></tr>
     </tfoot>
   </table></div>
 </div>
@@ -1670,10 +1670,11 @@ function renderAssetsInv(){
   document.querySelector("#assetsTable tbody").innerHTML = data.assetsInv.map((a,i)=>`<tr>
     <td><input value="${esc(a.desc)}" onchange="upd('assetsInv',${i},'desc',this.value)" aria-label="Description"></td>
     <td class="num"><input type="number" step="any" value="${a.qty}" onchange="upd('assetsInv',${i},'qty',+this.value)" aria-label="Quantity"></td>
+    <td><input type="date" value="${a.date||''}" onchange="upd('assetsInv',${i},'date',this.value)" aria-label="Date of purchase"></td>
     <td class="num"><input type="number" step="0.01" value="${a.cost}" onchange="upd('assetsInv',${i},'cost',+this.value)" aria-label="Cost"></td>
     <td class="num"><input type="number" step="0.01" value="${a.selling}" onchange="upd('assetsInv',${i},'selling',+this.value)" aria-label="Selling price"></td>
     <td><input type="checkbox" ${a.sold?"checked":""} onchange="upd('assetsInv',${i},'sold',this.checked)" aria-label="Sold"></td>
-    <td><input type="date" value="${a.date||''}" onchange="upd('assetsInv',${i},'date',this.value)" aria-label="Date of purchase"></td>
+    <td>${a.sold?`<input type="date" value="${a.soldDate||''}" onchange="upd('assetsInv',${i},'soldDate',this.value)" aria-label="Date of sale">`:""}</td>
     <td><button class="btn danger" onclick="del('assetsInv',${i})" aria-label="Delete asset">✕</button></td></tr>`).join("");
   const cost = data.assetsInv.reduce((s,a)=>s+(+a.cost||0),0);
   const sell = data.assetsInv.reduce((s,a)=>s+(+a.selling||0),0);
